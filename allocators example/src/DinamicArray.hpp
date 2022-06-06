@@ -34,6 +34,7 @@ public:
 		data_ = other.data_;
 		other.data_ = nullptr;
 	}
+
 	~DinamicArray() {
 		if (data_) {
 			allocatorTraits_.deallocate(data_, size_);
@@ -125,8 +126,8 @@ public:
 
 	class iterator {
 	public:
-		Type &operator->()const {
-			return *place_;
+		Type *operator->()const {
+			return place_;
 		}
 
 		Type &operator*()const {
@@ -218,7 +219,13 @@ public:
 		}
 	private:
 		iterator() = delete;
-		iterator(const DinamicArray &&position,Type place):collection_(position),place_(place){}
+
+		iterator(const DinamicArray &&position,Type *place)
+			:collection_(position),
+			place_(place)
+		{
+		}
+
 		friend class DinamicArray;
 		const DinamicArray &collection_;
 		Type *place_;
@@ -226,8 +233,8 @@ public:
 
 	class const_iterator:public iterator {
 	public:
-		const Type &operator->()const override{
-			return const_cast<const Type &>(*place_);
+		const Type *operator->()const override{
+			return const_cast<const Type *>(place_);
 		}
 
 		const Type &operator*()const override {
@@ -243,7 +250,7 @@ public:
 		}
 	private:
 		const_iterator() = delete;
-		const_iterator(const DinamicArray &&position, Type place)
+		const_iterator(const DinamicArray &&position, Type *place)
 			:iterator(position, place) {
 		}
 	};
@@ -275,6 +282,7 @@ public:
 private:
 	static struct {
 		Type * allocate(size_t n) const {
+			/*new char[sizeof(Type) * n]*/
 			return static_cast<Type *>(::malloc(sizeof(Type) * n));
 		}
 
@@ -295,5 +303,11 @@ private:
 	int capacity_;
 	int size_;
 };
+
+//template<>
+//class DinamicArray<bool> {
+//
+//};
+
 
 #endif // DINAMIC_ARRAY
