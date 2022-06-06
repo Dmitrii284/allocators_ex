@@ -8,6 +8,7 @@
 
 int main()
 {
+    extern DinamicArray<int> xyz3;
     std::cout << "Hello World!\n";
     std::vector<int> abc1;
     std::vector<int> abc2(31);

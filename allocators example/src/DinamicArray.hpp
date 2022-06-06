@@ -124,7 +124,7 @@ public:
 	}
 
 	class iterator {
-
+	public:
 		Type &operator->()const {
 			return *place_;
 		}
@@ -138,56 +138,131 @@ public:
 		};
 
 		
-		iterator &operator+(int i) {
+		iterator &operator+(int i)const {
+			iterator result(*this);
+			result.place_ += i;
+			return result;
+		}
+
+		iterator &operator+=(int i) {
 			place_ += i;
-			position_ += i;
 			return *this;
 		}
 
-		iterator &operator-(int i) {
+		iterator &operator-(int i)const {
+			iterator result(*this);
+			result.place_ -= i;
+			return result;
+		}
+
+		iterator &operator-=(int i) {
 			place_ -= i;
-			position_ -= i;
 			return *this;
 		}
 
 		iterator &operator--() {
 			place_ -= 1;
-			position_ -= 1;
 			return *this;
 		}
 
 		iterator &operator--(int) {
 			iterator tmp{*this};
 			place_ -= 1;
-			position_ -= 1;
 			return tmp;
 		}
 
 		iterator &operator++() {
 			place_ += 1;
-			position_ += 1;
 			return *this;
 		}
 
 		iterator &operator++(int) {
 			iterator tmp{*this};
 			place_ += 1;
-			position_ += 1;
 			return tmp;
 		}
 
 		operator bool()const {
-
+			return static_cast<bool>(place_);
 		}
 
+		bool operator==(const iterator &&other)const {
+			return place_ == other.place_;
+		}
+
+		bool operator!=(const iterator &&other)const {
+			return !(*this == other);
+		}
+
+		bool operator<(const iterator &&other)const {
+			return place_ < other.place_;
+		}
+
+		bool operator<=(const iterator &&other)const {
+			return place_ <= other.place_;
+		}
+
+		bool operator>(const iterator &&other)const {
+			return place_ > other.place_;
+		}
+
+		bool operator>=(const iterator &&other)const {
+			return place_ >= other.place_;
+		}
+
+		Type& operator[](int i)const {
+			return plce_[i];
+		}
+		const DinamicArray const *from()const {
+			return &collection_;
+		}
 	private:
 		iterator() = delete;
-		iterator(int position,Type place):position_(position),place_(place){}
-
-		int position_;
+		iterator(const DinamicArray &&position,Type place):collection_(position),place_(place){}
+		friend class DinamicArray;
+		const DinamicArray &collection_;
 		Type *place_;
 	};
 
+	class const_iterator:public iterator {
+	public:
+		const Type &operator->()const override{
+			return const_cast<const Type &>(*place_);
+		}
+
+		const Type &operator*()const override {
+			return const_cast<const Type &>(*place_);
+		};
+
+		operator Type *()const override {
+			return const_cast<const Type *>(place_);
+		};
+
+		const Type &operator[](int i)const override {
+			return const_cast<const Type &>(plce_[i]);
+		}
+	private:
+		const_iterator() = delete;
+		const_iterator(const DinamicArray &&position, Type place)
+			:iterator(position, place) {
+		}
+	};
+
+	iterator begin() {
+		return iterator(*this, data_);
+	}
+
+	const_iterator cbegin()const {
+		return const_iterator(*this, data_);
+	}
+
+	iterator end() {
+		return iterator(*this, data_ + size_);
+	}
+
+	const_iterator cend()const {
+		return const_iterator(*this, data_ + size_);
+	}
 
 	int size() const {
 		return size_;
