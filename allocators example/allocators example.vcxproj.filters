@@ -4,6 +4,6 @@
     <ClCompile Include="src\allocators example.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Array.hpp" />
+    <ClInclude Include="src\DinamicArray.hpp" />
   </ItemGroup>
 </Project>
