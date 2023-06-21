@@ -45,6 +45,7 @@ int size() const {
 
 
 
+
 //abstract dinamic array
 template<class Type>
 class DinamicArray {
